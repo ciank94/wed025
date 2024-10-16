@@ -12,6 +12,26 @@ filename = remote_folder + 'interp_output.nc'
 #filename = remote_folder + 'download1.nc'
 
 df = nc.Dataset(filename)
+Td = df['d2m'][0, :, :] - 273.15
+T = df['t2m'][0, :, :] - 273.15
+lon = df['lon']
+lat = df['lat']
+eTd = 6.1078*(np.exp((17.1*Td)/(235+Td)))
+eT = 6.1078*(np.exp((17.1*T)/(235+T)))
+RH = 100*(eTd/eT)
+#RH = 100 - (T - Td)*5
+fig, axs = plt.subplots(figsize=(8, 8), nrows=1, ncols=1, subplot_kw={'projection': ccrs.PlateCarree()})
+fig1 = axs.pcolormesh(lon, lat, RH, cmap=plt.get_cmap('hot'),
+                          transform=ccrs.PlateCarree())
+axs.coastlines()
+fig.colorbar(fig1, label='RH ' + ' units =' + '%')
+axs.set_title('long_name = ' + 'relative humidity')
+axs.gridlines(draw_labels=True, dms=True, x_inline=False, y_inline=False)
+#axs.set_extent([0, 100, 0, 100])
+plt.show()
+
+
+breakpoint()
 lon = df['lon']
 lat = df['lat']
 for str_v in ['u10','v10', 'd2m','t2m', 'msl', 'sp', 'tp',  'sf','strd','ssrd']:
